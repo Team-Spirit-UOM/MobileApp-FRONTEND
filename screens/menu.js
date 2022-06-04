@@ -87,10 +87,7 @@ const Menu =({navigation}) => {
             price: data.price,
             image: data.image,
             size: data.size,
-            crust: data.crust,
             delivery: data.delivery,
-            ingredients: data.ingredients,
-            isTopOfTheWeek: data.isTopOfTheWeek,
             navigation: navigation,
           })
         }>
@@ -108,21 +105,7 @@ const Menu =({navigation}) => {
             alignItems: 'center',
           }}>
           <View style={{marginBottom: 50}}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                display: data.isTopOfTheWeek ? 'flex' : 'none',
-              }}>
-              <FontAwesome
-                name="crown"
-                style={{
-                  fontSize: 10,
-                  color: COLOURS.accent,
-                }}
-              />
-              
-            </View>
+            
             <Text
               style={{
                 fontSize: 22,
@@ -134,11 +117,12 @@ const Menu =({navigation}) => {
             </Text>
             <Text
               style={{
-                fontSize: 12,
-                color: COLOURS.black,
+                
+                fontSize: 20,
+                color: '#000000',
                 opacity: 0.5,
               }}>
-              {data.weight}
+              LKR {data.price}
             </Text>
           </View>
           <View style={{width: 150, height: 150, marginRight: -45}}>
@@ -183,14 +167,7 @@ const Menu =({navigation}) => {
                 name="star"
                 style={{fontSize: 12, color: COLOURS.black, paddingRight: 5}}
               />
-              <Text
-                style={{
-                  fontSize: 15,
-                  color: COLOURS.black,
-                  fontWeight: 'bold',
-                }}>
-                {data.rating}
-              </Text>
+              
             </View>
           </View>
         </View>
@@ -203,7 +180,7 @@ const Menu =({navigation}) => {
         <View>
         <View style={styles.headerMain}>
         <View style={styles.headerFlex}>
-          <TouchableOpacity onPress={()=> navigation.openDrawer()}>
+          <TouchableOpacity onPress={()=>navigation.navigate}>
             <Icons name="menu-outline" size={40} color="#333" />
           </TouchableOpacity>
           <TextInput 

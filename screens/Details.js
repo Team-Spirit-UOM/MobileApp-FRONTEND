@@ -14,10 +14,8 @@ const Details = ({route}) => {
     price,
     image,
     size,
-    crust,
     delivery,
-    ingredients,
-    isTopOfTheWeek,
+    
   } = route.params;
   
   const addToCart = (data, index) => {
@@ -28,10 +26,7 @@ const Details = ({route}) => {
                 price: price,
                 image: image,
                 size: size,
-                crust: crust,
                 delivery: delivery,
-                ingredients: ingredients,
-                isTopOfTheWeek: isTopOfTheWeek,
                 navigation: navigation
               }
              

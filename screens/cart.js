@@ -5,13 +5,11 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import foods from '../assets/database/items.js';
 
 const Cart =() => {
-	const CardCard = () =>{
-        return <View></View>
-	}
+
     return(
 		<SafeAreaView style={{backgroundColor:'#ffffff',flex:1}}>
 			<View style={style.header}>
-			<Text style={{fontSize:20,fontWeight:'bold'}}>Cart</Text>
+			<Text style={{fontSize:20}}>Cart Item</Text>
 			</View>
 			<FlatList
 			    showsHorizontalScrollIndicator={false}
