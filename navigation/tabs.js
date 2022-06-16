@@ -68,7 +68,7 @@ const Tabs = () => {
             }}/>
             <Tab.Screen name="Profile" component={profile}
             options ={{
-                
+                headerShown: false,
                 tabBarIcon:({focused}) => (
                    <View style={{alignItems:'center', justifyContent:'center'}}>
                        <Image

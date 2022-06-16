@@ -1,22 +1,33 @@
-import React,{useState} from 'react';
-import {View, Text, Image,ScrollView, StyleSheet ,Dimensions,TouchableOpacity,TextInput ,StatusBar,FlatList} from 'react-native';
-import Icons from 'react-native-vector-icons/Ionicons';
-import {Categories, COLOURS} from '../assets/database/items';
-import Material from 'react-native-vector-icons/MaterialIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome5';
-import Entypo from 'react-native-vector-icons/Entypo';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  StatusBar,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  TextInput,
+  FlatList,
+  Dimensions
+} from 'react-native';
 var {width} = Dimensions.get('window');
+import {COLOURS, Items} from '../assets/database/items.js';
+import Icons from 'react-native-vector-icons/Ionicons';
+import {Categories} from '../assets/database/categories.js';
+import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const Menu =({navigation}) => {
-  const [currentSelected, setCurrentSelected] = useState([0]);
 
-  const renderCategories = ({item, index}) => {
+  const [currentSelected, setCurrentSelected] = useState([0]);
+ 
+  const renderCategories = ({item,index}) => {
     return (
       <TouchableOpacity
         activeOpacity={0.9}
-        onPress={() => setCurrentSelected(index)}>
+        onPress={() => setCurrentSelected(item.name)}>
         <View
           style={{
             width: 120,
@@ -24,7 +35,7 @@ const Menu =({navigation}) => {
             justifyContent: 'space-evenly',
             alignItems: 'center',
             backgroundColor:
-              currentSelected == index ? '#33DDFF' : COLOURS.white,
+              currentSelected == item.name ? '#33DDFF' : COLOURS.white,
             borderRadius: 20,
             margin: 10,
             elevation: 5,
@@ -53,7 +64,7 @@ const Menu =({navigation}) => {
               height: 30,
               borderRadius: 100,
               backgroundColor:
-                currentSelected == index ? COLOURS.white : '#a12adb',
+                currentSelected == item.name ? COLOURS.white : '#a12adb',
               justifyContent: 'center',
               alignItems: 'center',
             }}>
@@ -61,7 +72,7 @@ const Menu =({navigation}) => {
               name="angle-right"
               style={{
                 fontSize: 12,
-                color: currentSelected == index ? COLOURS.black : COLOURS.white,
+                color: currentSelected == item.name ? COLOURS.black : COLOURS.white,
               }}
             />
           </View>
@@ -70,27 +81,59 @@ const Menu =({navigation}) => {
     );
   };
 
-  const renderItems = (data, index) => {
+  const [burger, setBurger] = useState([]);
+  const [pizza, setPizza] = useState([]);
+  const [cake, setCake] = useState([]);
+  const [juice, setJuice] = useState([]);
+
+  //get called on screen loads
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getDataFromDB();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  //get data from DB
+
+  const getDataFromDB = () => {
+    let burgerList = [];
+    let pizzaList = [];
+    let cakeList = [];
+    let juiceList = [];
+    for (let index = 0; index < Items.length; index++) {
+      if (Items[index].category == 'Burger') {
+        burgerList.push(Items[index]);
+      } else if (Items[index].category == 'Pizza') {
+        pizzaList.push(Items[index]);
+      } else if (Items[index].category == 'Cake') {
+        cakeList.push(Items[index]);
+      } else if (Items[index].category == 'Juice') {
+        juiceList.push(Items[index]);
+      }
+    }
+
+    setBurger( burgerList);
+    setPizza(pizzaList);
+    setCake(cakeList);
+    setJuice(juiceList);
+  };
+
+ 
+
+  const ProductCard = ({data}) => {
     return (
+      
       <TouchableOpacity
-        key={index}
+        onPress={() => navigation.navigate('Details', {productID: data.id})}
         activeOpacity={0.9}
         style={{
           width: '100%',
           height: 180,
           justifyContent: 'center',
           alignItems: 'center',
-        }}
-        onPress={() =>
-          navigation.push('Details', {
-            name: data.name,
-            price: data.price,
-            image: data.image,
-            size: data.size,
-            delivery: data.delivery,
-            navigation: navigation,
-          })
-        }>
+        }}>
         <View
           style={{
             width: '90%',
@@ -104,16 +147,17 @@ const Menu =({navigation}) => {
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-          <View style={{marginBottom: 50}}>
+            <View style={{marginBottom: 50}}>
             
             <Text
               style={{
                 fontSize: 22,
                 color: COLOURS.black,
                 fontWeight: 'bold',
-                paddingTop: 10,
+                paddingVertical:10
+               
               }}>
-              {data.name}
+              {data.productName}
             </Text>
             <Text
               style={{
@@ -122,12 +166,12 @@ const Menu =({navigation}) => {
                 color: '#000000',
                 opacity: 0.5,
               }}>
-              LKR {data.price}
+              LKR {data.productPrice}
             </Text>
-          </View>
-          <View style={{width: 150, height: 150, marginRight: -45}}>
+           </View>
+           <View style={{width: 150, height: 150, marginRight: -45}}>
             <Image
-              source={data.image}
+              source={data.productImage}
               style={{
                 width: '100%',
                 height: '100%',
@@ -135,127 +179,138 @@ const Menu =({navigation}) => {
               }}
             />
           </View>
-          <View
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
+          {data.isOff ? (
             <View
               style={{
-                width: 85,
-                height: 50,
+                position: 'absolute',
+                width: '20%',
+                height: '24%',
                 backgroundColor: '#a12adb',
-                borderTopRightRadius: 20,
-                borderBottomLeftRadius: 20,
+                top: 0,
+                left: 0,
+                borderTopLeftRadius: 10,
+                borderBottomRightRadius: 10,
+                alignItems: 'center',
                 justifyContent: 'center',
-                alignItems: 'center',
+                
               }}>
-              <Entypo
-                name="plus"
-                style={{fontSize: 18, color: COLOURS.white}}
-              />
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginLeft: 20,
-              }}>
-              <AntDesign
-                name="star"
-                style={{fontSize: 12, color: COLOURS.black, paddingRight: 5}}
-              />
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: COLOURS.white,
+                  fontWeight: 'bold',
+                  letterSpacing: 1,
+                }}>
+                {data.offPercentage}%
+              </Text>
               
             </View>
+          ) : null}
           </View>
-        </View>
+        
       </TouchableOpacity>
+      
     );
   };
 
-   
-    return(
-        <View>
-        <View style={styles.headerMain}>
-        <View style={styles.headerFlex}>
-          <TouchableOpacity onPress={()=>navigation.navigate}>
-            <Icons name="menu-outline" size={40} color="#333" />
-          </TouchableOpacity>
-          <TextInput 
-          placeholder="Search..." 
-          placeholderTextColor="#333"
-          style={styles.searchBox}
-          />
-           <TouchableOpacity>
-            <Icons name="search-outline" size={30} color="#333" style={styles.searchIcon} />
-          </TouchableOpacity>
-        </View>
-      </View>
-    
-      <ScrollView showsVerticalScrollIndicator={false}>
-      <View >
-            <View >
-                <Text style={styles.text}>Hello</Text>
-                <Text style={styles.subtext}>Welcome to Aliz Restuarant!</Text>
-            </View>
-      </View >
-        <View
-          style={{
-            width: '100%',
-            height: '90%',
-            backgroundColor: COLOURS.white,
-            position: 'relative',
-          }}>
-          <StatusBar backgroundColor={COLOURS.white} barStyle="dark-content" />
-          
-          
-         
-         
-          <FlatList
-            horizontal={true}
-            data={Categories}
-            renderItem={renderCategories}
-            showsHorizontalScrollIndicator={false}
-          />
-          <Text
-            style={{
-              paddingTop: 10,
-              paddingHorizontal: 20,
-              fontSize: 20,
-              fontWeight: '600',
-              color: COLOURS.black,
-            }}>
-           Select Your Favourite
-          </Text>
-          {Categories[currentSelected].items.map(renderItems)}
-          <TouchableOpacity
-            style={{
-              margin:30,
-              justifyContent: 'center',
-              alignItems: 'center',
-              opacity: 0.5,
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                color: COLOURS.black,
-                borderBottomWidth: 1,
-                borderBottomColor: COLOURS.black,
-              }}>
-              Load more
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+  
+ 
+  return (
+    <View>
+    <View style={styles.headerMain}>
+    <View style={styles.headerFlex}>
+      <TouchableOpacity onPress={()=>navigation.navigate}>
+        <Icons name="menu-outline" size={40} color="#333" />
+      </TouchableOpacity>
+      <TextInput 
+      placeholder="Search..." 
+      placeholderTextColor="#333"
+      style={styles.searchBox}
+      />
+       <TouchableOpacity>
+        <Icons name="search-outline" size={30} color="#333" style={styles.searchIcon} />
+      </TouchableOpacity>
     </View>
-              
-     
-    );
-}
+  </View>
 
-const styles = StyleSheet.create({
+  <ScrollView showsVerticalScrollIndicator={false}>
+  <View >
+        <View >
+            <Text style={styles.text}>Hello</Text>
+            <Text style={styles.subtext}>Welcome to Aliz Restuarant!</Text>
+        </View>
+  </View >
+    <View
+      style={{
+        width: '100%',
+        height: '90%',
+        backgroundColor: COLOURS.white,
+        position: 'relative',
+      }}>
+      <StatusBar backgroundColor={COLOURS.white} barStyle="dark-content" />
+      
+      
+     
+     
+      <FlatList
+        horizontal={true}
+        data={Categories}
+        renderItem={renderCategories}
+        showsHorizontalScrollIndicator={false}
+      />
+      <Text
+        style={{
+          paddingTop: 10,
+          paddingHorizontal: 20,
+          fontSize: 20,
+          fontWeight: '600',
+          color: COLOURS.black,
+        }}>
+       Select Your Favourite
+      </Text>
+      <View>
+     { currentSelected == 'Burger'? burger.map(data => {
+        return <ProductCard data={data} key={data.id} />;
+      })  :  null} 
+       { currentSelected == 'Pizza'? pizza.map(data => {
+        return <ProductCard data={data} key={data.id} />;
+      })  :  null} 
+      { currentSelected == 'Cake'? cake.map(data => {
+        return <ProductCard data={data} key={data.id} />;
+      })  :  null} 
+      { currentSelected == 'Juice'? juice.map(data => {
+        return <ProductCard data={data} key={data.id} />;
+      })  :  null} 
+     
+
+    
+    
+      </View>
+      
+      <TouchableOpacity
+        style={{
+          margin:30,
+          justifyContent: 'center',
+          alignItems: 'center',
+          opacity: 0.5,
+        }}>
+        <Text
+          style={{
+            fontSize: 16,
+            color: COLOURS.black,
+            borderBottomWidth: 1,
+            borderBottomColor: COLOURS.black,
+          }}>
+          Load more
+        </Text>
+      </TouchableOpacity>
+    </View>
+  </ScrollView>
+</View>
+     );
+  }
+
+  const styles = StyleSheet.create({
     headerMain: {
       width: width,
       height: width / 4 - 35,
@@ -308,6 +363,9 @@ const styles = StyleSheet.create({
 
     }
   });
+
+
+
   
 
 export default Menu;
