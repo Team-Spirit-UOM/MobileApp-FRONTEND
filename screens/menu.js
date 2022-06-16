@@ -237,7 +237,7 @@ const Menu =({navigation}) => {
   <View >
         <View >
             <Text style={styles.text}>Hello</Text>
-            <Text style={styles.subtext}>Welcome to Aliz Restuarant!</Text>
+            <Text style={styles.subtext}>Welcome to Home Food Restuarant!</Text>
         </View>
   </View >
     <View
